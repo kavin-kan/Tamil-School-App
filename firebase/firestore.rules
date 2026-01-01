@@ -1,0 +1,104 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Helper function to check if user is authenticated
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    // Helper function to check if user is the owner
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+    
+    // Users collection
+    match /users/{userId} {
+      allow read: if isOwner(userId) || isTeacher() || isAdmin();
+      allow write: if isOwner(userId) || isAdmin();
+    }
+    
+    // Students collection
+    match /students/{studentId} {
+      // Allow students to read their own data
+      allow read: if isAuthenticated() && (
+        isOwner(studentId) || 
+        isParentOf(studentId) || 
+        isTeacher() || 
+        isAdmin()
+      );
+      
+      // Only teachers and admins can write student data
+      allow write: if isTeacher() || isAdmin();
+      
+      // Skills subcollection
+      match /skills/{skillId} {
+        allow read: if isAuthenticated() && (
+          isOwner(studentId) || 
+          isParentOf(studentId) || 
+          isTeacher() || 
+          isAdmin()
+        );
+        allow write: if isTeacher() || isAdmin();
+      }
+      
+      // Assignments subcollection
+      match /assignments/{assignmentId} {
+        allow read: if isAuthenticated() && (
+          isOwner(studentId) || 
+          isParentOf(studentId) || 
+          isTeacher() || 
+          isAdmin()
+        );
+        allow write: if isTeacher() || isAdmin();
+      }
+      
+      // Attendance subcollection
+      match /attendance/{attendanceId} {
+        allow read: if isAuthenticated() && (
+          isOwner(studentId) || 
+          isParentOf(studentId) || 
+          isTeacher() || 
+          isAdmin()
+        );
+        allow write: if isTeacher() || isAdmin();
+      }
+      
+      // Feedback subcollection
+      match /feedback/{feedbackId} {
+        allow read: if isAuthenticated() && (
+          isOwner(studentId) || 
+          isParentOf(studentId) || 
+          isTeacher() || 
+          isAdmin()
+        );
+        allow write: if isTeacher() || isAdmin();
+      }
+    }
+    
+    // Classes collection
+    match /classes/{classId} {
+      allow read: if isAuthenticated();
+      allow write: if isTeacher() || isAdmin();
+    }
+    
+    // Helper function to check if user is a teacher
+    function isTeacher() {
+      return isAuthenticated() && 
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'teacher';
+    }
+    
+    // Helper function to check if user is an admin
+    function isAdmin() {
+      return isAuthenticated() && 
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
+    }
+    
+    // Helper function to check if user is a parent of the student
+    function isParentOf(studentId) {
+      return isAuthenticated() && 
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'parent' &&
+        studentId in get(/databases/$(database)/documents/users/$(request.auth.uid)).data.children;
+    }
+  }
+}
+
