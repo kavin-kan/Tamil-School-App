@@ -264,3 +264,4 @@ The pages may be empty initially (no data yet), but you can see the UI structure
 
 **Need help?** Check the full [SETUP.md](SETUP.md) guide for detailed instructions.
 
+
