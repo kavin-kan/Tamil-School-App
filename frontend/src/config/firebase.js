@@ -5,12 +5,13 @@ import { getAuth } from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore';
 
 const firebaseConfig = {
-  apiKey: "your-api-key",
-  authDomain: "your-project.firebaseapp.com",
-  projectId: "your-project-id",
-  storageBucket: "your-project.appspot.com",
-  messagingSenderId: "123456789",
-  appId: "your-app-id"
+  apiKey: "AIzaSyCp5WW_dWQNX-3J_jjTNNfP-sgEBMOACWo",
+  authDomain: "tamil-school-app.firebaseapp.com",
+  projectId: "tamil-school-app",
+  storageBucket: "tamil-school-app.firebasestorage.app",
+  messagingSenderId: "548063537124",
+  appId: "1:548063537124:web:055197eb18f9fc9e6c89f1",
+  measurementId: "G-KCRCW5LW7F"
 };
 
 // Initialize Firebase
